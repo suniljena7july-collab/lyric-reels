@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#120e0a">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Lyric Reels">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="icon" href="icon-192.png">
+<title>Lyric Reels</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;600&family=Tiro+Devanagari+Hindi&family=Hind:wght@500;600&family=Playfair+Display:ital,wght@0,600;1,600&family=Caveat:wght@600&display=swap">
+<style>
+:root{--bg:#fbf5ea;--sf:#fff;--ln:#eadfc9;--fg:#231a10;--mut:#85745c;--g:linear-gradient(135deg,#ffc83d,#ff8a1f 55%,#ff5a36);box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#120e0a;--sf:#1e1812;--ln:#33291d;--fg:#fff4e0;--mut:#b09c80}}
+:root[data-theme="dark"]{--bg:#120e0a;--sf:#1e1812;--ln:#33291d;--fg:#fff4e0;--mut:#b09c80}
+html{height:100%;scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;height:100%;background:var(--bg);color:var(--fg);font:400 16px/1.45 "DM Sans",system-ui,sans-serif;overflow:hidden}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);background:var(--bg);z-index:30}
+#app{height:100%;display:flex;flex-direction:column}
+.top{display:flex;align-items:center;gap:10px;padding:10px 16px}
+.logo{width:36px;height:36px;border-radius:50%;background:var(--g);display:grid;place-items:center}
+.logo svg{width:15px;height:15px;fill:#1a0f05;margin-left:2px}
+.top b{font:italic 600 22px "Playfair Display",Georgia,serif;flex:1}
+button{font:600 14px "DM Sans",sans-serif;border:1.5px solid var(--ln);background:transparent;color:var(--fg);border-radius:12px;padding:10px 16px;cursor:pointer}
+button.p{background:var(--g);color:#1a0f05;border:0}
+button:focus-visible,select:focus-visible,textarea:focus-visible,.tab:focus-visible{outline:2px solid #ff8a1f;outline-offset:2px}
+.view{flex:1;min-height:0;display:flex;justify-content:center;padding:2px 16px}
+canvas{height:100%;width:auto;aspect-ratio:9/16;max-width:100%;border-radius:10px;background:#000;box-shadow:0 0 0 6px var(--sf),0 0 0 7px var(--ln),0 18px 40px rgba(255,138,31,.22)}
+.bar{display:flex;gap:12px;align-items:center;padding:12px 18px}
+.bar input{flex:1;accent-color:#ff8a1f}
+#play{border-radius:50%;width:54px;height:54px;padding:0;font-size:12px;min-width:0!important}
+.sheet{height:32vh;min-height:180px;overflow:auto;background:var(--sf);border:1px solid var(--ln);border-radius:20px;margin:0 12px 8px;padding:14px 16px}
+.panel[hidden]{display:none}#auth{position:fixed;inset:0;z-index:50;background:var(--bg);display:grid;place-items:center;padding:20px;overflow:auto}#auth[hidden]{display:none}#auth .card{width:100%;max-width:380px;display:flex;flex-direction:column;gap:10px;text-align:center;align-items:stretch}#auth .logo{margin:0 auto 4px;width:56px;height:56px}#auth input{width:100%;font:inherit;color:var(--fg);background:var(--sf);border:1.5px solid var(--ln);border-radius:12px;padding:12px}.sm{padding:7px 12px;font-size:13px}.li{display:flex;gap:10px;align-items:center;padding:8px 0;border-bottom:1px solid var(--ln)}.li img{width:40px;height:71px;object-fit:cover;border-radius:6px;background:#000}.li span{flex:1;min-width:0;font-size:14px;overflow:hidden;text-overflow:ellipsis}.li small{display:block;color:var(--mut)}
+.chips{display:flex;gap:8px;overflow-x:auto;margin-bottom:12px;padding-bottom:2px}
+.chip{white-space:nowrap;flex:none;border-radius:999px}
+.chip.on{background:var(--g);color:#1a0f05;border-color:transparent}
+h2{margin:0 0 6px;font:italic 600 19px "Playfair Display",Georgia,serif}
+.h{margin:0 0 10px;color:var(--mut);font-size:14px}
+textarea,select,input[type=number]{width:100%;font:inherit;color:var(--fg);background:var(--bg);border:1.5px solid var(--ln);border-radius:12px;padding:10px}
+textarea{height:110px;resize:none;line-height:1.6}
+.pick{display:flex;align-items:center;gap:12px;border:1.5px dashed var(--ln);border-radius:14px;padding:10px 12px;margin-bottom:8px;cursor:pointer}
+.pick:focus-within{outline:2px solid #ff8a1f}
+.pick input{display:none}
+.pick i{width:40px;height:40px;border-radius:50%;background:var(--g);display:grid;place-items:center;font-style:normal;color:#1a0f05;font-size:20px}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.row>*{flex:1 1 120px}
+nav{display:flex;background:var(--fg);border-radius:26px;margin:0 12px 10px;padding:6px}
+.tab{flex:1;background:none;border:0;border-radius:20px;padding:7px 0;color:var(--bg);opacity:.6;font-size:11px;display:flex;flex-direction:column;align-items:center;gap:2px;position:relative}
+.tab svg{width:21px;height:21px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.tab.on{opacity:1;background:var(--g);color:#1a0f05}
+.badge{position:absolute;top:2px;right:24%;background:#1a0f05;color:#ffc83d;border-radius:99px;font-size:10px;padding:0 5px}
+#tapbar{position:fixed;left:0;right:0;bottom:0;z-index:40;padding:14px 16px calc(14px + env(safe-area-inset-bottom,0px));background:var(--sf);border-top:1px solid var(--ln);text-align:center}
+#tapbar[hidden]{display:none}
+#tapnext{margin:0 0 10px;font-size:18px}
+#tapbtn{width:100%;padding:22px;font-size:18px}
+</style></head><body><div id="app">
+<div class="top"><div class="logo"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div><b>Lyric Reels</b><button id="acct" class="sm" type="button">Sign in</button><button id="top-exp" class="p" type="button">Export</button></div>
+<div class="view"><canvas id="cv"></canvas></div>
+<div class="bar"><button id="play" class="p" type="button" style="min-width:84px">Play</button><input id="seek" type="range" min="0" max="1000" value="0" aria-label="Timeline"></div>
+<div class="sheet">
+<div class="panel" data-p="lyr"><h2>Lyrics</h2><p class="h">One line per screen. Hindi, Hinglish or English.</p>
+<textarea id="lyr" spellcheck="false">Tum mile toh jaise
+Saari duniya mil gayi
+Raaton ki khamoshi mein
+Teri yaad khil gayi</textarea><button id="clrL" class="sm" type="button" style="margin-top:8px">Clear lyrics</button></div>
+<div class="panel" data-p="med" hidden><h2>Image and song</h2><p class="h">One image is enough. Add more and they play in order.</p>
+<label class="pick"><input id="imgs" type="file" accept="image/*" multiple><i>＋</i><span id="imgn">Choose image</span></label>
+<label class="pick"><input id="aud" type="file" accept="audio/*"><i>♪</i><span id="audn">Choose song</span></label><div class="row"><button id="clrI" class="sm" type="button">Clear images</button><button id="clrA" class="sm" type="button">Clear song</button></div></div>
+<div class="panel" data-p="tim" hidden><h2>Timing</h2><p class="h">Play the song and tap as each line starts, or spread them evenly.</p>
+<div class="row"><button id="sync" class="p" type="button">Tap to sync</button><button id="spread" type="button">Spread evenly</button></div>
+<p class="h" style="margin-top:12px">Seconds per line when there is no song</p><input id="per" type="number" min="1" max="12" step="0.5" value="3"></div>
+<div class="panel" data-p="sty" hidden><h2>Style</h2>
+<div id="chips" class="chips"></div>
+<div class="row"><select id="font" aria-label="Font"><option value="Tiro Devanagari Hindi">Tiro (Hindi serif)</option><option value="Hind">Hind (Hindi sans)</option><option value="Playfair Display">Playfair (English)</option><option value="Caveat">Caveat (handwritten)</option></select>
+<select id="anim" aria-label="Animation"><option value="rise">Rise and fade</option><option value="words">Word by word</option><option value="fade">Soft fade</option><option value="pop">Pop in</option><option value="karaoke">Karaoke highlight</option></select></div>
+<div class="row" style="margin-top:10px"><label>Size <input id="size" type="range" min="40" max="96" value="64" style="width:100%;accent-color:#ff8a1f"></label><label>Colour <input id="col" type="color" value="#fff3e6" style="width:100%;height:42px;border:0;background:none"></label></div>
+<div class="row" style="margin-top:6px"><label>Accent <input id="hl" type="color" value="#ff9ec0" style="width:100%;height:42px;border:0;background:none"></label><label style="display:flex;gap:8px;align-items:center"><input id="viz" type="checkbox" style="width:20px;height:20px;accent-color:#ff8a1f"> Beat bars</label></div></div>
+<div class="panel" data-p="exp" hidden><h2>Export</h2><p class="h">Records the reel as it plays, then saves the video. Keep this screen open until it finishes.</p>
+<button id="exp" class="p" type="button" style="width:100%;padding:14px">Export video</button><div id="res" hidden><video id="rv" controls playsinline style="width:100%;max-height:30vh;border-radius:12px;margin-top:12px;background:#000"></video><div class="row" style="margin-top:8px"><button id="sv" class="p" type="button">Save to device</button><button id="sh" type="button">Share</button></div></div><p id="msg" class="h" style="margin-top:10px" role="status"></p><button id="newR" type="button" style="width:100%;margin-top:6px">Start new reel (clear all)</button></div>
+<div class="panel" data-p="lib" hidden><h2>Library</h2><p class="h">Your exported reels are kept on this device.</p><div id="libl"></div></div>
+</div>
+<nav>
+<button class="tab on" data-t="lyr" type="button"><svg viewBox="0 0 24 24"><path d="M4 6h16M4 12h10M4 18h13"/></svg>Lyrics</button>
+<button class="tab" data-t="med" type="button"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="3"/><circle cx="9" cy="10" r="2"/><path d="M21 16l-5-5-9 9"/></svg>Media<span id="nImg" class="badge" hidden></span></button>
+<button class="tab" data-t="tim" type="button"><svg viewBox="0 0 24 24"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l3 2M9 2h6"/></svg>Timing</button>
+<button class="tab" data-t="sty" type="button"><svg viewBox="0 0 24 24"><path d="M4 20l4-1L19 8l-3-3L5 16z"/></svg>Style</button>
+<button class="tab" data-t="exp" type="button"><svg viewBox="0 0 24 24"><path d="M12 3v12M7 10l5 5 5-5M4 20h16"/></svg>Export</button>
+<button class="tab" data-t="lib" type="button"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>Library</button>
+</nav>
+</div>
+<div id="auth" hidden><div class="card">
+<div class="logo"><svg viewBox="0 0 24 24" style="width:24px;height:24px;fill:#1a0f05;margin-left:3px"><path d="M8 5v14l11-7z"/></svg></div>
+<h2>Welcome to Lyric Reels</h2><p class="h">Sign in to keep your reels with your account.</p>
+<div id="authf" style="display:flex;flex-direction:column;gap:10px">
+<button id="gBtn" class="p" type="button" style="padding:13px">Continue with Google</button>
+<input id="em" type="email" placeholder="Email" autocomplete="email" aria-label="Email">
+<input id="pw" type="password" placeholder="Password" autocomplete="current-password" aria-label="Password">
+<div class="row"><button id="siBtn" class="p" type="button">Sign in</button><button id="suBtn" type="button">Create account</button></div>
+<button id="rsBtn" class="sm" type="button">Forgot password</button></div>
+<p id="anote" class="h" role="alert"></p>
+<button id="guest" type="button">Continue as guest</button></div></div>
+<div id="tapbar" hidden><p id="tapnext"></p><button id="tapbtn" class="p" type="button">Tap when this line starts</button></div>
+<script src="firebase-config.js"></script>
+<script>
+const $=id=>document.getElementById(id),cv=$('cv'),ctx=cv.getContext('2d'),W=720,H=1280;
+cv.width=W;cv.height=H;
+let lines=[],starts=[],imgs=[],hasAudio=false,playing=false,base=0,t0=0,tap=-1,T=0,drag=false,ac=null,dest=null,recMr=null;
+const audio=new Audio();
+const say=s=>$('msg').textContent=s;
+const per=()=>+$('per').value||3;
+const dur=()=>hasAudio&&isFinite(audio.duration)?audio.duration:null;
+function parse(){lines=$('lyr').value.split('\n').map(s=>s.trim()).filter(Boolean);if(starts.length!==lines.length)spread();}
+function spread(){lines=$('lyr').value.split('\n').map(s=>s.trim()).filter(Boolean);const d=dur()||lines.length*per();starts=lines.map((_,i)=>i*d/Math.max(lines.length,1));}
+function total(){const d=dur();if(d)return d;return starts.length?starts[starts.length-1]+per():4;}
+function now(){return hasAudio?audio.currentTime:base+(performance.now()-t0)/1000;}
+function play(){if(playing)return;if(hasAudio){try{ensureAC();ac.resume();}catch(_){}audio.play().catch(()=>{});}else t0=performance.now();playing=true;$('play').textContent='Pause';}
+function pause(){if(!playing)return;if(hasAudio)audio.pause();else base=now();playing=false;$('play').textContent='Play';}
+function seekTo(s){if(hasAudio)audio.currentTime=s;base=s;t0=performance.now();T=s;}
+function finish(){if(!playing&&!recMr)return;pause();if(recMr){const m=recMr;recMr=null;setTimeout(()=>m.stop(),300);}seekTo(0);}
+audio.onended=finish;
+function wrap(text,maxW){const ws=text.split(/\s+/),rows=[[]];for(const w of ws){const cur=rows[rows.length-1];if(cur.length&&ctx.measureText([...cur,w].join(' ')).width>maxW)rows.push([w]);else cur.push(w);}return rows;}
+let an=null;
+function ensureAC(){if(ac)return;ac=new (window.AudioContext||window.webkitAudioContext)();const s=ac.createMediaElementSource(audio);dest=ac.createMediaStreamDestination();an=ac.createAnalyser();an.fftSize=128;s.connect(an);s.connect(dest);s.connect(ac.destination);}
+function bars(t){const n=32,bw=W/(n*1.6),gap=bw*.6;let d=null;if(an&&playing){d=new Uint8Array(an.frequencyBinCount);an.getByteFrequencyData(d);}
+  ctx.fillStyle=$('hl').value;ctx.globalAlpha=.85;ctx.shadowBlur=0;
+  for(let k=0;k<n;k++){const v=d?d[2+k]/255:.3+.2*Math.sin(t*3+k*.7)*Math.sin(t*1.3+k);const h=Math.max(6,v*150),x=(W-n*(bw+gap))/2+k*(bw+gap);ctx.fillRect(x,H-70-h,bw,h);}
+  ctx.globalAlpha=1;}
+function draw(t){
+  const tot=total();
+  if(imgs.length){const seg=tot/imgs.length,k=Math.min(imgs.length-1,Math.floor(t/seg)||0),im=imgs[k],p=Math.min(1,Math.max(0,(t-k*seg)/seg)),r=Math.max(W/im.width,H/im.height)*(1.04+.08*p),w=im.width*r,h=im.height*r;ctx.drawImage(im,(W-w)/2,(H-h)/2,w,h);}
+  else{const g=ctx.createLinearGradient(0,0,W,H);g.addColorStop(0,'#2a1208');g.addColorStop(.55,'#a3361f');g.addColorStop(1,'#ffb020');ctx.fillStyle=g;ctx.fillRect(0,0,W,H);}
+  const sh=ctx.createLinearGradient(0,H*.35,0,H);sh.addColorStop(0,'rgba(10,6,16,0)');sh.addColorStop(1,'rgba(10,6,16,.78)');ctx.fillStyle=sh;ctx.fillRect(0,0,W,H);
+  if($('viz').checked)bars(t);
+  let i=-1;for(let j=0;j<starts.length;j++)if(starts[j]<=t)i=j;
+  if(i<0||!lines[i])return;
+  const st=starts[i],en=starts[i+1]!==undefined&&starts[i+1]<1e8?starts[i+1]:tot,len=Math.max(.3,en-st),loc=t-st;
+  const size=+$('size').value,fam=`"${$('font').value}",sans-serif`,anim=$('anim').value;
+  ctx.textBaseline='middle';ctx.textAlign='left';ctx.font=`600 ${size}px ${fam}`;
+  const rows=wrap(lines[i],W-120),lh=size*1.35,y0=H*.68-rows.length*lh/2+lh/2;
+  const gIn=Math.min(1,loc/.45),gOut=Math.min(1,Math.max(0,(len-loc)/.25)),prog=Math.min(1,loc/(len*.6));
+  const nW=rows.reduce((a,r)=>a+r.length,0);let wi=0;
+  ctx.fillStyle=$('col').value;ctx.shadowColor=(anim==='pop'||anim==='karaoke')?$('hl').value:'rgba(0,0,0,.55)';ctx.shadowBlur=(anim==='pop'||anim==='karaoke')?24:18;
+  rows.forEach((row,ri)=>{
+    const sp=ctx.measureText(' ').width,rw=ctx.measureText(row.join(' ')).width;let x=(W-rw)/2;
+    row.forEach(w=>{
+      let a=gOut,dy=0;ctx.fillStyle=$('col').value;
+      if(anim==='pop'){const q=Math.min(1,Math.max(0,(loc-wi*.09)/.25));a*=q;dy=(1-q)*36-Math.sin(q*Math.PI)*10;}
+      else if(anim==='karaoke'){const sung=wi<prog*nW;a*=sung?1:.55;if(sung)ctx.fillStyle=$('hl').value;}
+      else if(anim==='rise'){a*=gIn;dy=(1-gIn)*40;}
+      else if(anim==='fade'){a*=gIn;}
+      else a*=Math.min(1,Math.max(0,prog*nW-wi+.2)*1.5);
+      ctx.globalAlpha=a;ctx.fillText(w,x,y0+ri*lh+dy);x+=ctx.measureText(w).width+sp;wi++;
+    });
+  });
+  const nx=lines[i+1];
+  if(nx){ctx.globalAlpha=.4*gOut;ctx.font=`500 ${size*.5}px ${fam}`;ctx.textAlign='center';const r2=wrap(nx,W-140)[0].join(' ');ctx.fillText(r2,W/2,y0+rows.length*lh+size*.5);}
+  ctx.globalAlpha=1;ctx.shadowBlur=0;
+}
+function loop(){
+  const tot=total();
+  if(playing){T=now();if(T>=tot&&!hasAudio)finish();}
+  draw(T);
+  if(!drag)$('seek').value=Math.round(Math.min(1,T/tot)*1000);
+  requestAnimationFrame(loop);
+}
+$('play').onclick=()=>{playing?pause():(parse(),play());};
+$('seek').onpointerdown=()=>drag=true;
+$('seek').onpointerup=()=>drag=false;
+$('seek').oninput=e=>seekTo(e.target.value/1000*total());
+$('spread').onclick=()=>{spread();say('Lines spread evenly.');};
+$('lyr').oninput=()=>{lines=$('lyr').value.split('\n').map(s=>s.trim()).filter(Boolean);if(starts.length!==lines.length)spread();};
+function nextTap(){$('tapnext').textContent=lines[tap]||'';}
+$('sync').onclick=()=>{parse();if(!lines.length){say('Add lyrics first.');return;}pause();seekTo(0);tap=0;starts=lines.map(()=>1e9);play();$('tapbar').hidden=false;nextTap();};
+$('tapbtn').onpointerdown=()=>{if(tap<0)return;starts[tap]=Math.max(0,now());tap++;if(tap>=lines.length){tap=-1;$('tapbar').hidden=true;say('Timing saved. Press Play to check it.');}else nextTap();};
+const rd=f=>new Promise(r=>{const x=new FileReader();x.onload=()=>r(x.result);x.readAsDataURL(f);});
+$('imgs').onchange=async e=>{imgs=[];for(const f of e.target.files){const im=new Image();im.src=await rd(f);try{await im.decode();}catch(_){}imgs.push(im);}$('imgn').textContent=imgs.length+(imgs.length===1?' illustration added':' illustrations added');};
+$('aud').onchange=async e=>{const f=e.target.files[0];if(!f)return;audio.src=await rd(f);audio.onloadedmetadata=()=>{hasAudio=true;spread();$('audn').textContent=f.name+' ('+Math.round(audio.duration)+'s)';};};
+function loadFont(){const f=$('font').value;return document.fonts.load(`600 40px "${f}"`,'अआक Ab').catch(()=>{});}
+$('font').onchange=loadFont;
+function pickMime(){const c=['video/mp4;codecs=avc1','video/webm;codecs=vp9,opus','video/webm;codecs=vp8,opus','video/webm'];return c.find(m=>window.MediaRecorder&&MediaRecorder.isTypeSupported(m));}
+$('exp').onclick=async()=>{
+  parse();if(!lines.length){say('Add lyrics first.');return;}
+  let dl=null;try{dl=window.claude?await claude.use('downloads'):null;}catch(_){}
+  if(!dl)dl={save:async({filename,data})=>{const a=document.createElement('a');a.href=URL.createObjectURL(data instanceof Blob?data:new Blob([data]));a.download=filename;document.body.appendChild(a);a.click();a.remove();}};
+  const m=pickMime();if(!m){say('This browser cannot record video. Try Chrome or a recent Safari.');return;}
+  await loadFont();pause();seekTo(0);
+  const stream=cv.captureStream(30);
+  if(hasAudio){ensureAC();await ac.resume();dest.stream.getAudioTracks().forEach(t=>stream.addTrack(t));}
+  const mr=new MediaRecorder(stream,{mimeType:m,videoBitsPerSecond:6e6}),ch=[];
+  mr.ondataavailable=e=>{if(e.data.size)ch.push(e.data);};
+  mr.onstop=async()=>{
+    const ext=m.startsWith('video/mp4')?'mp4':'webm',blob=new Blob(ch,{type:m.split(';')[0]});showRes(blob,ext);
+    say('Saving…');
+    try{await dl.save({filename:'lyric-reel.'+ext,data:blob});say('Saved lyric-reel.'+ext+'.');}
+    catch(e){if(e&&e.code==='bad_request'){try{await dl.save({filename:'lyric-reel.'+ext,data:new Uint8Array(await blob.arrayBuffer())});say('Saved lyric-reel.'+ext+'.');return;}catch(_){}}say(e&&e.code==='declined'?'Save cancelled.':'Could not save the video.');}
+  };
+  recMr=mr;mr.start(1000);say('Recording… keep this screen open until it finishes.');play();
+};
+loadFont();spread();requestAnimationFrame(loop);
+
+document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>{document.querySelectorAll('.tab').forEach(x=>x.classList.toggle('on',x===b));document.querySelectorAll('.panel').forEach(p=>p.hidden=p.dataset.p!==b.dataset.t);});
+$('top-exp').onclick=()=>document.querySelector('.tab[data-t=exp]').click();
+const upd=()=>{$('nImg').textContent=imgs.length||'';$('nImg').hidden=!imgs.length;};
+$('imgs').addEventListener('change',()=>setTimeout(upd,400));
+
+const PRE={Romantic:{font:'Tiro Devanagari Hindi',anim:'rise',size:64,col:'#fff3e6',hl:'#ff9ec0',viz:0},Karaoke:{font:'Hind',anim:'karaoke',size:62,col:'#ffffff',hl:'#ffd23f',viz:1},Neon:{font:'Hind',anim:'pop',size:68,col:'#7df9ff',hl:'#ff4fd8',viz:1},Minimal:{font:'Playfair Display',anim:'fade',size:56,col:'#f4ece6',hl:'#f4ece6',viz:0},Handwritten:{font:'Caveat',anim:'words',size:84,col:'#fff7d6',hl:'#ffb347',viz:0}};
+const KEYS=['lyr','font','anim','size','col','hl','per'];
+function save(){try{const o={};KEYS.forEach(k=>o[k]=$(k).value);o.viz=$('viz').checked;localStorage.setItem('lr',JSON.stringify(o));}catch(_){}}
+Object.keys(PRE).forEach(n=>{const b=document.createElement('button');b.type='button';b.className='chip';b.textContent=n;b.onclick=()=>{const p=PRE[n];['font','anim','size','col','hl'].forEach(k=>$(k).value=p[k]);$('viz').checked=!!p.viz;document.querySelectorAll('.chip').forEach(c=>c.classList.toggle('on',c===b));loadFont();save();};$('chips').appendChild(b);});
+try{const sv=JSON.parse(localStorage.getItem('lr')||'{}');KEYS.forEach(k=>{if(sv[k]!=null)$(k).value=sv[k];});$('viz').checked=!!sv.viz;}catch(_){}
+document.addEventListener('input',save);document.addEventListener('change',save);
+spread();loadFont();
+if('serviceWorker' in navigator&&location.protocol.startsWith('http'))addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));
+
+let last=null;
+function showRes(blob,ext,fromLib){last={blob,name:'lyric-reel.'+ext};if(!fromLib)libSave(blob,ext);$('rv').src=URL.createObjectURL(blob);$('res').hidden=false;$('sh').hidden=!navigator.canShare;document.querySelector('.tab[data-t=exp]').click();}
+$('sv').onclick=async()=>{if(!last)return;try{let d=null;try{d=window.claude?await claude.use('downloads'):null;}catch(_){}
+  if(d)await d.save({filename:last.name,data:last.blob});else{const a=document.createElement('a');a.href=URL.createObjectURL(last.blob);a.download=last.name;document.body.appendChild(a);a.click();a.remove();}
+  say('Saved '+last.name+'. Check your Downloads.');}catch(e){say('Could not save. Press and hold the video above to save it.');}};
+$('sh').onclick=async()=>{if(!last)return;const f=new File([last.blob],last.name,{type:last.blob.type});try{if(navigator.canShare({files:[f]}))await navigator.share({files:[f],title:'Lyric reel'});else say('Sharing is not supported here. Use Save to device.');}catch(_){}};
+
+let dbn='lr-lib';const idb=()=>new Promise((res,rej)=>{const r=indexedDB.open(dbn,1);r.onupgradeneeded=()=>r.result.createObjectStore('reels',{keyPath:'id',autoIncrement:true});r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error);});
+const tx=async(mode,fn)=>{const d=await idb();return new Promise((res,rej)=>{const t=d.transaction('reels',mode),q=fn(t.objectStore('reels'));t.oncomplete=()=>res(q&&q.result);t.onerror=()=>rej(t.error);});};
+async function libSave(blob,ext){try{const c=document.createElement('canvas');c.width=90;c.height=160;c.getContext('2d').drawImage(cv,0,0,90,160);
+  await tx('readwrite',o=>o.add({blob,ext,thumb:c.toDataURL('image/jpeg',.6),title:(lines[0]||'Lyric reel').slice(0,40),date:new Date().toLocaleString()}));}catch(_){}}
+async function renderLib(){const box=$('libl');box.textContent='';let all=[];try{all=await tx('readonly',o=>o.getAll())||[];}catch(_){}
+  if(!all.length){const p=document.createElement('p');p.className='h';p.textContent='No reels yet. Export one and it will appear here.';box.appendChild(p);return;}
+  all.reverse().forEach(r=>{const li=document.createElement('div');li.className='li';const im=document.createElement('img');im.src=r.thumb;im.alt='';
+    const sp=document.createElement('span');sp.textContent=r.title;const sm=document.createElement('small');sm.textContent=r.date;sp.appendChild(sm);
+    const o=document.createElement('button');o.className='sm p';o.type='button';o.textContent='Open';o.onclick=()=>showRes(r.blob,r.ext,true);
+    const d=document.createElement('button');d.className='sm';d.type='button';d.textContent='Delete';d.onclick=async()=>{try{await tx('readwrite',s=>s.delete(r.id));}catch(_){}renderLib();};
+    li.append(im,sp,o,d);box.appendChild(li);});}
+document.querySelector('.tab[data-t=lib]').addEventListener('click',renderLib);
+$('clrL').onclick=()=>{pause();$('lyr').value='';lines=[];starts=[];seekTo(0);save();};
+$('clrI').onclick=()=>{imgs=[];$('imgs').value='';$('imgn').textContent='Choose image';$('nImg').hidden=true;};
+$('clrA').onclick=()=>{pause();audio.removeAttribute('src');audio.load();hasAudio=false;$('aud').value='';$('audn').textContent='Choose song';spread();seekTo(0);};
+let armed=0;$('newR').onclick=function(){if(!armed){armed=1;this.textContent='Tap again to clear everything';setTimeout(()=>{armed=0;this.textContent='Start new reel (clear all)';},3000);return;}
+  armed=0;this.textContent='Start new reel (clear all)';$('clrL').click();$('clrI').click();$('clrA').click();last=null;$('res').hidden=true;$('rv').removeAttribute('src');say('Cleared. Ready for a new reel.');document.querySelector('.tab[data-t=lyr]').click();};
+
+let user=null,auth=null,authReady=false;
+const cfg=window.FIREBASE_CONFIG,configured=!!(cfg&&cfg.apiKey&&!/YOUR_/.test(cfg.apiKey));
+const guestFlag=()=>{try{return localStorage.getItem('lr-guest')==='1';}catch(_){return false;}};
+const showAuth=v=>{$('auth').hidden=!v;};
+function acctUI(){const a=$('acct');a.textContent=user?((user.displayName||user.email||'Account').split(/[ @]/)[0]):'Sign in';a.title=user?'Tap twice to sign out':'Sign in';}
+function applyUser(u){user=u;dbn=u?'lr-lib-'+u.uid:'lr-lib';acctUI();if(u)showAuth(false);else if(!guestFlag())showAuth(true);if(!document.querySelector('[data-p=lib]').hidden)renderLib();}
+const ld=src=>new Promise((r,j)=>{const t=document.createElement('script');t.src=src;t.onload=r;t.onerror=j;document.head.appendChild(t);});
+async function initAuth(){
+  if(!configured){$('authf').hidden=true;$('anote').textContent='Sign-in is not set up in this copy yet. You can continue as a guest.';applyUser(null);return;}
+  try{const B='https://www.gstatic.com/firebasejs/10.12.2/';await ld(B+'firebase-app-compat.js');await ld(B+'firebase-auth-compat.js');
+    firebase.initializeApp(cfg);auth=firebase.auth();auth.onAuthStateChanged(applyUser);
+  }catch(_){$('authf').hidden=true;$('anote').textContent='Could not reach the sign-in service. You can continue as a guest.';applyUser(null);}
+}
+const AE={'auth/invalid-credential':'Wrong email or password.','auth/wrong-password':'Wrong email or password.','auth/user-not-found':'No account with that email.','auth/email-already-in-use':'That email already has an account. Tap Sign in.','auth/weak-password':'Use a password with at least 6 characters.','auth/invalid-email':'Enter a valid email.','auth/network-request-failed':'No internet connection.','auth/unauthorized-domain':'This web address is not allowed yet. Add it in Firebase Authorized domains.','auth/popup-closed-by-user':'Sign-in was cancelled.'};
+const aerr=e=>{$('anote').textContent=AE[e&&e.code]||'Something went wrong. Try again.';};
+$('gBtn').onclick=async()=>{$('anote').textContent='';const p=new firebase.auth.GoogleAuthProvider();try{await auth.signInWithPopup(p);}catch(e){if(e&&(e.code==='auth/popup-blocked'||e.code==='auth/operation-not-supported-in-this-environment'))auth.signInWithRedirect(p);else aerr(e);}};
+$('siBtn').onclick=async()=>{$('anote').textContent='';try{await auth.signInWithEmailAndPassword($('em').value.trim(),$('pw').value);}catch(e){aerr(e);}};
+$('suBtn').onclick=async()=>{$('anote').textContent='';try{await auth.createUserWithEmailAndPassword($('em').value.trim(),$('pw').value);}catch(e){aerr(e);}};
+$('rsBtn').onclick=async()=>{const m=$('em').value.trim();if(!m){$('anote').textContent='Enter your email first.';return;}try{await auth.sendPasswordResetEmail(m);$('anote').textContent='Reset link sent. Check your email.';}catch(e){aerr(e);}};
+$('guest').onclick=()=>{try{localStorage.setItem('lr-guest','1');}catch(_){}showAuth(false);};
+let so=0;$('acct').onclick=function(){if(!user){showAuth(true);return;}if(!so){so=1;this.textContent='Sign out?';setTimeout(()=>{so=0;acctUI();},3000);return;}so=0;auth.signOut();};
+initAuth();
+</script></body></html>
