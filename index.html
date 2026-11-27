@@ -103,18 +103,31 @@ Teri yaad khil gayi</textarea><button id="clrL" class="sm" type="button" style="
 <p id="anote" class="h" role="alert"></p>
 <button id="guest" type="button">Continue as guest</button></div></div>
 <div id="tapbar" hidden><p id="tapnext"></p><button id="tapbtn" class="p" type="button">Tap when this line starts</button></div>
-<script src="firebase-config.js">
-async function fixDur(blob,ms){try{const u=new Uint8Array(await blob.arrayBuffer());let p=-1;
-  for(let i=0;i<Math.min(u.length-8,4096);i++)if(u[i]===0x15&&u[i+1]===0x49&&u[i+2]===0xA9&&u[i+3]===0x66){p=i;break;}
-  if(p<0)return blob;const sb=u[p+4];let n=1;while(n<=8&&!(sb&(0x80>>(n-1))))n++;if(n>8)return blob;
-  let size=sb&((0x80>>(n-1))-1);for(let k=1;k<n;k++)size=size*256+u[p+4+k];
-  const st=p+4+n,en=st+size;for(let i=st;i<en-1;i++)if(u[i]===0x44&&u[i+1]===0x89)return blob;
-  const d=new Uint8Array(11);d[0]=0x44;d[1]=0x89;d[2]=0x88;new DataView(d.buffer).setFloat64(3,ms);
-  const ns=size+11;if(ns>=Math.pow(2,7*n)-1)return blob;const nh=new Uint8Array(n);let v=ns;
-  for(let k=n-1;k>=0;k--){nh[k]=v%256;v=Math.floor(v/256);}nh[0]|=0x80>>(n-1);
-  return new Blob([u.subarray(0,p+4),nh,u.subarray(st,en),d,u.subarray(en)],{type:blob.type});}catch(_){return blob;}}
-</script>
+<script src="firebase-config.js"></script>
 <script>
+async function fixDur(blob,ms){
+  try{
+    const u=new Uint8Array(await blob.arrayBuffer());let p=-1;
+    for(let i=0;i<Math.min(u.length-8,4096);i++)
+      if(u[i]===0x15&&u[i+1]===0x49&&u[i+2]===0xA9&&u[i+3]===0x66){p=i;break;}
+    if(p<0)return blob;
+    const sb=u[p+4];let n=1;
+    while(n<=8&&!(sb&(0x80>>(n-1))))n++;
+    if(n>8)return blob;
+    let size=sb&((0x80>>(n-1))-1);
+    for(let k=1;k<n;k++)size=size*256+u[p+4+k];
+    const st=p+4+n,en=st+size;
+    for(let i=st;i<en-1;i++)if(u[i]===0x44&&u[i+1]===0x89)return blob;
+    const d=new Uint8Array(11);d[0]=0x44;d[1]=0x89;d[2]=0x88;
+    new DataView(d.buffer).setFloat64(3,ms);
+    const ns=size+11;
+    if(ns>=Math.pow(2,7*n)-1)return blob;
+    const nh=new Uint8Array(n);let v=ns;
+    for(let k=n-1;k>=0;k--){nh[k]=v%256;v=Math.floor(v/256);}
+    nh[0]|=0x80>>(n-1);
+    return new Blob([u.subarray(0,p+4),nh,u.subarray(st,en),d,u.subarray(en)],{type:blob.type});
+  }catch(_){return blob;}
+}
 const $=id=>document.getElementById(id),cv=$('cv'),ctx=cv.getContext('2d'),W=720,H=1280;
 cv.width=W;cv.height=H;
 let lines=[],starts=[],imgs=[],hasAudio=false,playing=false,base=0,t0=0,tap=-1,T=0,drag=false,ac=null,dest=null,recMr=null;
@@ -130,7 +143,16 @@ function play(){if(playing)return;if(hasAudio){try{if($('viz').checked)ensureAC(
 function pause(){if(!playing)return;if(hasAudio)audio.pause();else base=now();playing=false;$('play').textContent='Play';}
 function seekTo(s){if(hasAudio)audio.currentTime=s;base=s;t0=performance.now();T=s;}
 let recT0=0,recDur=0,recTimer=null,wl=null;
-function finish(){if(!playing&&!recMr)return;pause();if(recMr){const m=recMr;recMr=null;clearTimeout(recTimer);try{wl&&wl.release();}catch(_){}wl=null;recDur=(performance.now()-recT0)/1000;setTimeout(()=>{try{m.stop();}catch(_){}},400);}seekTo(0);}
+function finish(){
+  if(!playing&&!recMr)return;
+  pause();
+  if(recMr){
+    const m=recMr;recMr=null;clearTimeout(recTimer);
+    try{wl&&wl.release();}catch(_){}wl=null;
+    try{if(m.state!=='inactive')m.stop();}catch(_){}
+  }
+  seekTo(0);
+}
 audio.onended=finish;
 function wrap(text,maxW){const ws=text.split(/\s+/),rows=[[]];for(const w of ws){const cur=rows[rows.length-1];if(cur.length&&ctx.measureText([...cur,w].join(' ')).width>maxW)rows.push([w]);else cur.push(w);}return rows;}
 let an=null;
@@ -212,11 +234,17 @@ $('exp').onclick=async()=>{
   mr.ondataavailable=e=>{if(e.data.size)ch.push(e.data);};
   mr.onstop=async()=>{
     $('exp').disabled=false;
-    const ext=m.startsWith('video/mp4')?'mp4':'webm';let blob=new Blob(ch,{type:m.split(';')[0]});
-    if(recDur<1.5){say('Recording stopped too early ('+recDur.toFixed(1)+'s). Keep the screen on and this tab open, then try again.');return;}
+    recDur=(performance.now()-recT0)/1000;
+    const ext=m.startsWith('video/mp4')?'mp4':'webm';
+    let blob=new Blob(ch,{type:m.split(';')[0]});
+    if(recDur<1.5||!blob.size){
+      say('Recording stopped too early or produced an empty video. Keep this screen open and try again.');
+      return;
+    }
     if(ext==='webm')blob=await fixDur(blob,recDur*1000);
     showRes(blob,ext);
     say('Done: '+Math.round(recDur)+'s video ready. Tap Save to device.');
+    try{stream.getTracks().forEach(t=>t.stop());}catch(_){}
   };
   mr.onerror=e=>{$('exp').disabled=false;say('Recording failed'+(e&&e.error&&e.error.name?': '+e.error.name:'')+'. Try again.');};
   recMr=mr;recT0=performance.now();mr.start(500);recTimer=setTimeout(()=>{if(recMr)finish();},(total()+2)*1000);say('Recording… keep this screen on until it finishes.');play();
@@ -239,9 +267,24 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http'))addEventLi
 
 let last=null;
 function showRes(blob,ext,fromLib){last={blob,name:'lyric-reel.'+ext};if(!fromLib)libSave(blob,ext);$('rv').src=URL.createObjectURL(blob);$('rv').hidden=false;$('sv').disabled=false;$('sh').disabled=!navigator.canShare;const da=$('dla');da.href=URL.createObjectURL(blob);da.download=last.name;da.hidden=false;document.querySelector('.tab[data-t=exp]').click();}
-$('sv').onclick=async()=>{if(!last)return;try{let d=null;try{d=window.claude?await claude.use('downloads'):null;}catch(_){}
-  if(d)await d.save({filename:last.name,data:last.blob});else{const a=document.createElement('a');a.href=URL.createObjectURL(last.blob);a.download=last.name;document.body.appendChild(a);a.click();a.remove();}
-  say('Saved '+last.name+'. Check your Downloads.');}catch(e){say('Could not save. Press and hold the video above to save it.');}};
+$('sv').onclick=async()=>{
+  if(!last)return;
+  try{
+    let d=null;try{d=window.claude?await claude.use('downloads'):null;}catch(_){}
+    if(d){
+      await d.save({filename:last.name,data:last.blob});
+    }else{
+      const url=URL.createObjectURL(last.blob);
+      const a=document.createElement('a');
+      a.href=url;a.download=last.name;a.rel='noopener';
+      document.body.appendChild(a);a.click();a.remove();
+      setTimeout(()=>URL.revokeObjectURL(url),60000);
+    }
+    say('Download requested: '+last.name+'. Check your Downloads folder.');
+  }catch(e){
+    say('Download could not start. Use the video preview menu or press and hold the download link.');
+  }
+};
 $('sh').onclick=async()=>{if(!last)return;const f=new File([last.blob],last.name,{type:last.blob.type});try{if(navigator.canShare({files:[f]}))await navigator.share({files:[f],title:'Lyric reel'});else say('Sharing is not supported here. Use Save to device.');}catch(_){}};
 
 let dbn='lr-lib';const idb=()=>new Promise((res,rej)=>{const r=indexedDB.open(dbn,1);r.onupgradeneeded=()=>r.result.createObjectStore('reels',{keyPath:'id',autoIncrement:true});r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error);});
